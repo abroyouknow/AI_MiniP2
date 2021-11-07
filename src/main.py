@@ -11,7 +11,7 @@ class Game:
     n = 0
     s = 1
     b = -1
-    current_state = []*n
+    current_state = []
 
     def __init__(self, recommend=True):
         self.initialize_game()
@@ -27,7 +27,11 @@ class Game:
         while (self.b < 0) or (self.b > (2 * self.n)):
             self.b = int(input('enter the number of blocks you want on the board b (0 - 2n): '))
 
-        self.current_state = [['.'] * self.n] * self.n
+        for i in range(self.n):
+            temp = []
+            for j in range(self.n):
+                temp.append('.')
+            self.current_state.append(temp)
 
         #set blocks
         self.input_block()
