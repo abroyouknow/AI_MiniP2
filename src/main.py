@@ -8,28 +8,47 @@ class Game:
     ALPHABETA = 1
     HUMAN = 2
     AI = 3
+    n = 0
+    s = 1
+    b = -1
+    current_state = []*n
 
     def __init__(self, recommend=True):
         self.initialize_game()
         self.recommend = recommend
 
     def initialize_game(self):
-        self.current_state = [['.', '.', '.'],
-                              ['.', '.', '.'],
-                              ['.', '.', '.']]
+
+        # get board size from user
+        while (self.n < 3) or (self.n > 10):
+            self.n = int(input('enter the size of the board n (3 - 10): '))
+
+        # get number of blocks from user
+        while (self.b < 0) or (self.b > (2 * self.n)):
+            self.b = int(input('enter the number of blocks you want on the board b (0 - 2n): '))
+
+        self.current_state = [['.'] * self.n] * self.n
+
+        #set blocks
+        self.input_block()
+
+        # get winning line-up size from user
+        while (self.s < 3) or (self.s > self.n):
+            self.s = int(input('enter the winning line-up size s (3 - n): '))
+
         # Player X always plays first
         self.player_turn = 'X'
 
     def draw_board(self):
         print()
-        for y in range(0, 3):
-            for x in range(0, 3):
+        for y in range(0, self.n):
+            for x in range(0, self.n):
                 print(F'{self.current_state[x][y]}', end="")
             print()
         print()
 
     def is_valid(self, px, py):
-        if px < 0 or px > 2 or py < 0 or py > 2:
+        if px < 0 or px > self.n or py < 0 or py > self.n:
             return False
         elif self.current_state[px][py] != '.':
             return False
@@ -90,6 +109,20 @@ class Game:
                 return (px, py)
             else:
                 print('The move is not valid! Try again.')
+
+    def input_block(self):
+        block_count = 0
+        while block_count < self.b:
+            self.draw_board()
+            print('Enter the location of the block to be placed:')
+            px = int(input('enter the x coordinate: '))
+            py = int(input('enter the y coordinate: '))
+            if self.is_valid(px, py):
+                self.current_state[py][px] = '*'
+                block_count += 1
+            else:
+                print('This is not a valid location for a block, please try again')
+
 
     def switch_player(self):
         if self.player_turn == 'X':
