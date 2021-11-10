@@ -33,7 +33,7 @@ class Game:
                 temp.append('.')
             self.current_state.append(temp)
 
-        #set blocks
+        # set blocks
         self.input_block()
 
         # get winning line-up size from user
@@ -52,7 +52,7 @@ class Game:
         print()
 
     def is_valid(self, px, py):
-        if px < 0 or px > self.n or py < 0 or py > self.n:
+        if px < 0 or px > (self.n - 1) or py < 0 or py > (self.n - 1):
             return False
         elif self.current_state[px][py] != '.':
             return False
@@ -60,33 +60,46 @@ class Game:
             return True
 
     def is_end(self):
+        # limit for win
+        limit_for_win = self.n - self.s + 1
+
         # Vertical win
-        for i in range(0, 3):
-            if (self.current_state[0][i] != '.' and
-                    self.current_state[0][i] == self.current_state[1][i] and
-                    self.current_state[1][i] == self.current_state[2][i]):
-                return self.current_state[0][i]
+        for column in range(self.n):
+            for c in range(limit_for_win):
+                if self.current_state[column][c] != '.' and self.current_state[column][c] != '*':
+                    score = 1
+                    for next_c in range(c + 1, self.n):
+                        if self.current_state[column][c] != self.current_state[column][next_c]:
+                            break
+                        score += 1
+                        if score == self.s:
+                            return self.current_state[column][next_c]
         # Horizontal win
-        for i in range(0, 3):
-            if (self.current_state[i] == ['X', 'X', 'X']):
-                return 'X'
-            elif (self.current_state[i] == ['O', 'O', 'O']):
-                return 'O'
-        # Main diagonal win
-        if (self.current_state[0][0] != '.' and
-                self.current_state[0][0] == self.current_state[1][1] and
-                self.current_state[0][0] == self.current_state[2][2]):
-            return self.current_state[0][0]
-        # Second diagonal win
-        if (self.current_state[0][2] != '.' and
-                self.current_state[0][2] == self.current_state[1][1] and
-                self.current_state[0][2] == self.current_state[2][0]):
-            return self.current_state[0][2]
+        for i in range(0, self.n):
+            for j in range(0, limit_for_win):
+                if self.current_state[i][j] != '.' and self.current_state[i][j] != '*':
+                    score = 1
+                    for k in range(j + 1, self.n):
+                        if self.current_state[i][j] != self.current_state[i][k]:
+                            break
+                        score += 1
+                        if score == self.s:
+                            return self.current_state[i][j]
+        # # Main diagonal win
+        # if (self.current_state[0][0] != '.' and
+        #         self.current_state[0][0] == self.current_state[1][1] and
+        #         self.current_state[0][0] == self.current_state[2][2]):
+        #     return self.current_state[0][0]
+        # # Second diagonal win
+        # if (self.current_state[0][2] != '.' and
+        #         self.current_state[0][2] == self.current_state[1][1] and
+        #         self.current_state[0][2] == self.current_state[2][0]):
+        #     return self.current_state[0][2]
         # Is whole board full?
-        for i in range(0, 3):
-            for j in range(0, 3):
+        for i in range(0, self.n):
+            for j in range(0, self.n):
                 # There's an empty field, we continue the game
-                if (self.current_state[i][j] == '.'):
+                if self.current_state[i][j] == '.':
                     return None
         # It's a tie!
         return '.'
@@ -126,7 +139,6 @@ class Game:
                 block_count += 1
             else:
                 print('This is not a valid location for a block, please try again')
-
 
     def switch_player(self):
         if self.player_turn == 'X':
@@ -235,22 +247,22 @@ class Game:
             if self.check_end():
                 return
             start = time.time()
-            if algo == self.MINIMAX:
-                if self.player_turn == 'X':
-                    (_, x, y) = self.minimax(max=False)
-                else:
-                    (_, x, y) = self.minimax(max=True)
-            else:  # algo == self.ALPHABETA
-                if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(max=False)
-                else:
-                    (m, x, y) = self.alphabeta(max=True)
-            end = time.time()
+            # if algo == self.MINIMAX:
+            #     if self.player_turn == 'X':
+            #         (_, x, y) = self.minimax(max=False)
+            #     else:
+            #         (_, x, y) = self.minimax(max=True)
+            # else:  # algo == self.ALPHABETA
+            #     if self.player_turn == 'X':
+            #         (m, x, y) = self.alphabeta(max=False)
+            #     else:
+            #         (m, x, y) = self.alphabeta(max=True)
+            # end = time.time()4
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (
                     self.player_turn == 'O' and player_o == self.HUMAN):
-                if self.recommend:
-                    print(F'Evaluation time: {round(end - start, 7)}s')
-                    print(F'Recommended move: x = {x}, y = {y}')
+                # if self.recommend:
+                #     print(F'Evaluation time: {round(end - start, 7)}s')
+                #     print(F'Recommended move: x = {x}, y = {y}')
                 (x, y) = self.input_move()
             if (self.player_turn == 'X' and player_x == self.AI) or (self.player_turn == 'O' and player_o == self.AI):
                 print(F'Evaluation time: {round(end - start, 7)}s')
@@ -261,10 +273,8 @@ class Game:
 
 def main():
     g = Game(recommend=True)
-    g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_o=Game.AI)
-    g.play(algo=Game.MINIMAX, player_x=Game.AI, player_o=Game.HUMAN)
+    g.play(algo=Game.MINIMAX, player_x=Game.HUMAN, player_o=Game.HUMAN)
 
 
 if __name__ == "__main__":
     main()
-
