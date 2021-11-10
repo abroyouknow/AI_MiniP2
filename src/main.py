@@ -89,11 +89,58 @@ class Game:
 
     def draw_board(self):
         print()
+
+        # print horizontal indices according to size
+        print("   ", end="")
+        for i in range(0, self.n):
+            print(F'{self.get_letter(i)}', end="")
+
+        # print line at top of board
+        print()
+        print("  +", end="")
+        for i in range(0, self.n):
+            print("-", end="")
+
+
+        print()
         for y in range(0, self.n):
+            print(y, "|", end="")
             for x in range(0, self.n):
                 print(F'{self.current_state[x][y]}', end="")
             print()
         print()
+
+    def get_letter(self, letter):
+        switcher = {
+            0: "A",
+            1: "B",
+            2: "C",
+            3: "D",
+            4: "E",
+            5: "F",
+            6: "G",
+            7: "H",
+            8: "I",
+            9: "J"
+        }
+
+        return switcher.get(letter, " ")
+
+    def get_index(self, letter):
+        switcher = {
+            "A": 0,
+            "B": 1,
+            "C": 2,
+            "D": 3,
+            "E": 4,
+            "F": 5,
+            "G": 6,
+            "H": 7,
+            "I": 8,
+            "J": 9
+        }
+
+        return switcher.get(letter, " ")
 
     def is_valid(self, px, py):
         if px < 0 or px > (self.n - 1) or py < 0 or py > (self.n - 1):
@@ -205,10 +252,10 @@ class Game:
     def input_move(self):
         while True:
             print(F'Player {self.player_turn}, enter your move:')
-            px = int(input('enter the x coordinate: '))
-            py = int(input('enter the y coordinate: '))
-            if self.is_valid(px, py):
-                return (px, py)
+            px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
+            py = int(input(F'enter the y coordinate (0-{self.n - 1}): '))
+            if self.is_valid(py, px):
+                return (py, px)
             else:
                 print('The move is not valid! Try again.')
 
@@ -217,10 +264,10 @@ class Game:
         while block_count < self.b:
             self.draw_board()
             print('Enter the location of the block to be placed:')
-            px = int(input('enter the x coordinate: '))
-            py = int(input('enter the y coordinate: '))
-            if self.is_valid(px, py):
-                self.current_state[py][px] = '*'
+            px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n-1)}): '))
+            py = int(input(F'enter the y coordinate (0-{self.n-1}): '))
+            if self.is_valid(py, px):
+                self.current_state[px][py] = '*'
                 block_count += 1
             else:
                 print('This is not a valid location for a block, please try again')
@@ -347,11 +394,11 @@ class Game:
                     self.player_turn == 'O' and player_o == self.HUMAN):
                 if self.recommend:
                     print(F'Evaluation time: {round(end - start, 7)}s')
-                    print(F'Recommended move: x = {x}, y = {y}')
+                    print(F'Recommended move: x = {self.get_letter(x)}, y = {y}')
                 (x, y) = self.input_move()
             if (self.player_turn == 'X' and player_x == self.AI) or (self.player_turn == 'O' and player_o == self.AI):
                 print(F'Evaluation time: {round(end - start, 7)}s')
-                print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+                print(F'Player {self.player_turn} under AI control plays: x = {self.get_letter(x)}, y = {y}')
             self.current_state[x][y] = self.player_turn
             self.switch_player()
 
