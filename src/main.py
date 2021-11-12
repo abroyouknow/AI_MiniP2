@@ -11,6 +11,10 @@ class Game:
     n = 0
     s = 1
     b = -1
+    d1 = 0
+    t = 0
+    d2 = 0
+    a = False
     current_state = []
 
     def __init__(self, recommend=True):
@@ -39,6 +43,27 @@ class Game:
         # get winning line-up size from user
         while (self.s < 3) or (self.s > self.n):
             self.s = int(input('enter the winning line-up size s (3 - n): '))
+
+        # Max depth of adversarial search for player 1
+        while self.d1 < 1:
+            self.d1 = int(input('enter the max depth of the adversarial search for player 1: '))
+
+        # Max depth of adversarial search for player 2
+        while self.d2 < 1:
+            self.d2 = int(input('enter the max depth of the adversarial search for player 2: '))
+
+        # Max time for program to return a move
+        while self.t < 1:
+            self.t = int(input('enter the maximum allowed time (in seconds) for the program to return a move: '))
+
+        # Boolean for use of minimax or alphabeta
+        temp = 0
+        while temp < 1 or temp > 2:
+            print('Please select which type of adversarial search the program should implement')
+            temp = int(input('Enter 1 for Minimax or 2 for AlphaBeta: '))
+
+        if temp == 2:
+            self.a = True
 
         # Player X always plays first
         self.player_turn = 'X'
