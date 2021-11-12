@@ -152,6 +152,7 @@ class Game:
         return switcher.get(letter, " ")
 
     def get_index(self, letter):
+        letter = letter.upper()
         switcher = {
             "A": 0,
             "B": 1,
@@ -165,7 +166,7 @@ class Game:
             "J": 9
         }
 
-        return switcher.get(letter, " ")
+        return switcher.get(letter, -1)
 
     def is_valid(self, px, py):
         if px < 0 or px > (self.n - 1) or py < 0 or py > (self.n - 1):
@@ -176,49 +177,6 @@ class Game:
             return True
 
     def is_end(self):
-        # # limit for win
-        # limit_for_win = self.n - self.s + 1
-        #
-        # # Vertical win
-        # for column in range(self.n):
-        #     for c in range(limit_for_win):
-        #         if self.current_state[column][c] != '.' and self.current_state[column][c] != '*':
-        #             score = 1
-        #             for next_c in range(c + 1, self.n):
-        #                 if self.current_state[column][c] != self.current_state[column][next_c]:
-        #                     break
-        #                 score += 1
-        #                 if score == self.s:
-        #                     return self.current_state[column][next_c]
-        # # Horizontal win
-        # for i in range(self.n):
-        #     for j in range(limit_for_win):
-        #         if self.current_state[i][j] != '.' and self.current_state[i][j] != '*':
-        #             score = 1
-        #             for k in range(j + 1, self.n):
-        #                 if self.current_state[i][j] != self.current_state[i][k]:
-        #                     break
-        #                 score += 1
-        #                 if score == self.s:
-        #                     return self.current_state[i][j]
-
-        # # Main diagonal win
-        # if (self.current_state[0][0] != '.' and
-        #         self.current_state[0][0] == self.current_state[1][1] and
-        #         self.current_state[0][0] == self.current_state[2][2]):
-        #     return self.current_state[0][0]
-        # # Second diagonal win
-        # if (self.current_state[0][2] != '.' and
-        #         self.current_state[0][2] == self.current_state[1][1] and
-        #         self.current_state[0][2] == self.current_state[2][0]):
-        #     return self.current_state[0][2]
-        # Is whole board full?
-        # for i in range(0, self.n):
-        #     for j in range(0, self.n):
-        #         # There's an empty field, we continue the game
-        #         if self.current_state[i][j] == '.':
-        #             return None
-
         # Iterate over all possible winning lines
         for win in self.win_indices:
             # Keep track of last k symbols in a row (and corresponding player)
@@ -279,8 +237,8 @@ class Game:
             print(F'Player {self.player_turn}, enter your move:')
             px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
             py = int(input(F'enter the y coordinate (0-{self.n - 1}): '))
-            if self.is_valid(py, px):
-                return (py, px)
+            if self.is_valid(px, py):
+                return px, py
             else:
                 print('The move is not valid! Try again.')
 
