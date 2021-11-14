@@ -126,7 +126,6 @@ class Game:
         for i in range(0, self.n):
             print("-", end="")
 
-
         print()
         for y in range(0, self.n):
             print(y, "|", end="")
@@ -135,7 +134,8 @@ class Game:
             print()
         print()
 
-    def get_letter(self, letter):
+    @staticmethod
+    def get_letter(index):
         switcher = {
             0: "A",
             1: "B",
@@ -149,9 +149,10 @@ class Game:
             9: "J"
         }
 
-        return switcher.get(letter, " ")
+        return switcher.get(index, " ")
 
-    def get_index(self, letter):
+    @staticmethod
+    def get_index(letter):
         letter = letter.upper()
         switcher = {
             "A": 0,
@@ -247,8 +248,8 @@ class Game:
         while block_count < self.b:
             self.draw_board()
             print('Enter the location of the block to be placed:')
-            px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n-1)}): '))
-            py = int(input(F'enter the y coordinate (0-{self.n-1}): '))
+            px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
+            py = int(input(F'enter the y coordinate (0-{self.n - 1}): '))
             if self.is_valid(py, px):
                 self.current_state[px][py] = '*'
                 block_count += 1
@@ -262,77 +263,121 @@ class Game:
             self.player_turn = 'X'
         return self.player_turn
 
-    def minimax(self, max=False):
+    def is_valid_coordinates(self, coords):
+        return 0 <= coords[0] < self.n and 0 <= coords[1] < self.n
+
+    def heuristic_simple(self, max):
+        # Blocked
+        # side = 0
+        # Free
+        # side = +1
+        # Side
+        # with same symbol = +2
+
+        heuristic = 0
+        player = 'X'
+        other_player = 'O'
+        if max:
+            player = 'O'
+            other_player = 'X'
+
+        neighbor_offsets = [
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
+        ]
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.current_state[i][j] == player:
+                    for neighbor in neighbor_offsets:
+                        coords = (i + neighbor[0], j + neighbor[1])
+                        if self.is_valid_coordinates(coords):
+                            symbol = self.current_state[coords[0]][coords[1]]
+                            if symbol == player:
+                                heuristic += 2
+                            elif symbol == ".":
+                                heuristic += 1
+                            elif symbol == other_player:
+                                heuristic -= 1
+        return heuristic
+
+    def minimax(self, depth=3, max=False):
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
         # -1 - win for 'X'
         # 0  - a tie
         # 1  - loss for 'X'
         # We're initially setting it to 2 or -2 as worse than the worst case:
-        value = 2
+        value = 10000
         if max:
-            value = -2
-        x = None
-        y = None
+            value = -10000
+        x = y = None
         result = self.is_end()
         if result == 'X':
-            return (-1, x, y)
+            return value, x, y
         elif result == 'O':
-            return (1, x, y)
+            return value, x, y
         elif result == '.':
-            return (0, x, y)
-        for i in range(0, 3):
-            for j in range(0, 3):
+            return 0, x, y
+        elif result is None and depth == 0:
+            return self.heuristic_simple(max), x, y
+        for i in range(self.n):
+            for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
-                        (v, _, _) = self.minimax(max=False)
+                        (v, _, _) = self.minimax(depth - 1, max=False)
                         if v > value:
                             value = v
                             x = i
                             y = j
                     else:
                         self.current_state[i][j] = 'X'
-                        (v, _, _) = self.minimax(max=True)
+                        (v, _, _) = self.minimax(depth - 1, max=True)
                         if v < value:
                             value = v
                             x = i
                             y = j
                     self.current_state[i][j] = '.'
-        return (value, x, y)
+        return value, x, y
 
-    def alphabeta(self, alpha=-2, beta=2, max=False):
+    def alphabeta(self, depth=3, alpha=-10000, beta=10000, max=False):
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
         # -1 - win for 'X'
         # 0  - a tie
         # 1  - loss for 'X'
         # We're initially setting it to 2 or -2 as worse than the worst case:
-        value = 2
+        value = 10000
         if max:
-            value = -2
-        x = None
-        y = None
+            value = -10000
+        x = y = None
+        # check depth = 0
         result = self.is_end()
         if result == 'X':
-            return (-1, x, y)
+            return value, x, y
         elif result == 'O':
-            return (1, x, y)
-        elif result == '.':
-            return (0, x, y)
-        for i in range(0, 3):
-            for j in range(0, 3):
+            return value, x, y
+        elif result == '.' and depth == 0:
+            return self.heuristic_simple(), x, y
+        for i in range(self.n):
+            for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
-                        (v, _, _) = self.alphabeta(alpha, beta, max=False)
+                        (v, _, _) = self.alphabeta(depth - 1, alpha, beta, max=False)
                         if v > value:
                             value = v
                             x = i
                             y = j
                     else:
                         self.current_state[i][j] = 'X'
-                        (v, _, _) = self.alphabeta(alpha, beta, max=True)
+                        (v, _, _) = self.alphabeta(depth - 1, alpha, beta, max=True)
                         if v < value:
                             value = v
                             x = i
@@ -340,22 +385,22 @@ class Game:
                     self.current_state[i][j] = '.'
                     if max:
                         if value >= beta:
-                            return (value, x, y)
+                            return value, x, y
                         if value > alpha:
                             alpha = value
                     else:
                         if value <= alpha:
-                            return (value, x, y)
+                            return value, x, y
                         if value < beta:
                             beta = value
-        return (value, x, y)
+        return value, x, y
 
     def play(self, algo=None, player_x=None, player_o=None):
-        if algo == None:
+        if algo is None:
             algo = self.ALPHABETA
-        if player_x == None:
+        if player_x is None:
             player_x = self.HUMAN
-        if player_o == None:
+        if player_o is None:
             player_o = self.HUMAN
         while True:
             self.draw_board()
@@ -364,14 +409,14 @@ class Game:
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
-                    (_, x, y) = self.minimax(max=False)
+                    (_, x, y) = self.minimax(depth=self.d1, max=False)
                 else:
-                    (_, x, y) = self.minimax(max=True)
+                    (_, x, y) = self.minimax(depth=self.d2, max=True)
             else:  # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(max=False)
+                    (m, x, y) = self.alphabeta(depth=self.d1, max=False)
                 else:
-                    (m, x, y) = self.alphabeta(max=True)
+                    (m, x, y) = self.alphabeta(depth=self.d2, max=True)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (
                     self.player_turn == 'O' and player_o == self.HUMAN):
