@@ -266,44 +266,54 @@ class Game:
     def is_valid_coordinates(self, coords):
         return 0 <= coords[0] < self.n and 0 <= coords[1] < self.n
 
-    def heuristic_simple(self, max):
-        # Blocked
-        # side = 0
-        # Free
-        # side = +1
-        # Side
-        # with same symbol = +2
-
+    def heuristic_simple(self):
+        # Iterate over all possible winning lines
+        # h += 10^o - 10^x for each winning line
+        # where o and x are the number of each player symbol respectively
         heuristic = 0
-        player = 'X'
-        other_player = 'O'
-        if max:
-            player = 'O'
-            other_player = 'X'
+        for win in self.win_indices:
+            x = o = 0
+            for coords in win:
+                symbol = self.current_state[coords[0]][coords[1]]
+                if symbol == 'O':
+                    o += 1
+                elif symbol == 'X':
+                    x += 1
+            heuristic += pow(10, o) - pow(10, x)
+        return heuristic
 
-        neighbor_offsets = [
-            (-1, -1),
-            (-1, 0),
-            (-1, 1),
-            (0, -1),
-            (0, 1),
-            (1, -1),
-            (1, 0),
-            (1, 1),
-        ]
-        for i in range(self.n):
-            for j in range(self.n):
-                if self.current_state[i][j] == player:
-                    for neighbor in neighbor_offsets:
-                        coords = (i + neighbor[0], j + neighbor[1])
-                        if self.is_valid_coordinates(coords):
-                            symbol = self.current_state[coords[0]][coords[1]]
-                            if symbol == player:
-                                heuristic += 2
-                            elif symbol == ".":
-                                heuristic += 1
-                            elif symbol == other_player:
-                                heuristic -= 1
+    def heuristic_complex(self):
+        # Iterate over all possible winning lines
+        # h += 10^o - 10^x for each winning line
+        # where o and x are the number of each player symbol respectively
+        heuristic = 0
+        for win in self.win_indices:
+            x = o = 0
+            for coords in win:
+                symbol = self.current_state[coords[0]][coords[1]]
+
+                # Symbol is the same as the last one, increment score
+                if symbol == last_player:
+                    score += 1
+
+                # Symbol belongs to a different player than last symbol
+                elif symbol != '.' and symbol != '*':
+
+                    # Attempt match S players symbols in a row to win
+                    last_player = symbol
+                    score = 1
+
+                # Symbol is empty or block
+                else:
+                    last_player = None
+
+                    # Not enough symbols left to make S in a row
+                    if len(win) - i < self.s:
+                        break
+
+                # Player wins
+                if score >= self.s:
+                    return last_player
         return heuristic
 
     def minimax(self, depth=3, max=False):
@@ -313,19 +323,19 @@ class Game:
         # 0  - a tie
         # 1  - loss for 'X'
         # We're initially setting it to 2 or -2 as worse than the worst case:
-        value = 10000
+        value = float('inf')
         if max:
-            value = -10000
+            value = -value
         x = y = None
         result = self.is_end()
         if result == 'X':
-            return value, x, y
+            return self.heuristic_simple() + value, x, y
         elif result == 'O':
-            return value, x, y
+            return self.heuristic_simple() + value, x, y
         elif result == '.':
             return 0, x, y
         elif result is None and depth == 0:
-            return self.heuristic_simple(max), x, y
+            return self.heuristic_simple(), x, y
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
@@ -353,9 +363,9 @@ class Game:
         # 0  - a tie
         # 1  - loss for 'X'
         # We're initially setting it to 2 or -2 as worse than the worst case:
-        value = 10000
+        value = float('inf')
         if max:
-            value = -10000
+            value = -value
         x = y = None
         # check depth = 0
         result = self.is_end()
@@ -409,26 +419,38 @@ class Game:
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
-                    (_, x, y) = self.minimax(depth=self.d1, max=False)
+                    (value, x, y) = self.minimax(depth=self.d1, max=False)
                 else:
-                    (_, x, y) = self.minimax(depth=self.d2, max=True)
+                    (value, x, y) = self.minimax(depth=self.d2, max=True)
             else:  # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(depth=self.d1, max=False)
+                    (value, x, y) = self.alphabeta(depth=self.d1, max=False)
                 else:
-                    (m, x, y) = self.alphabeta(depth=self.d2, max=True)
+                    (value, x, y) = self.alphabeta(depth=self.d2, max=True)
+            if abs(value) == float('inf'):
+                print("Check mate, any moves you play will result in a lose next turn")
+                x, y = return_first_spot(self)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (
                     self.player_turn == 'O' and player_o == self.HUMAN):
                 if self.recommend:
                     print(F'Evaluation time: {round(end - start, 7)}s')
                     print(F'Recommended move: x = {self.get_letter(x)}, y = {y}')
+                    print(F'Output value: value = {value}')
                 (x, y) = self.input_move()
             if (self.player_turn == 'X' and player_x == self.AI) or (self.player_turn == 'O' and player_o == self.AI):
                 print(F'Evaluation time: {round(end - start, 7)}s')
                 print(F'Player {self.player_turn} under AI control plays: x = {self.get_letter(x)}, y = {y}')
             self.current_state[x][y] = self.player_turn
             self.switch_player()
+
+
+def return_first_spot(self):
+    for i in range(self.n):
+        for j in range(self.n):
+            if self.current_state[i][j] == '.':
+                return i, j
+    return None
 
 
 def main():
