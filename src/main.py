@@ -2,23 +2,67 @@
 
 import time
 
+counter = 4
+
+
+def iota():
+    global counter
+    counter += 1
+    return counter
+
 
 class Game:
-    MINIMAX = 0
-    ALPHABETA = 1
-    HUMAN = 2
-    AI = 3
+    # Game Modes
+    H_VS_H = 1
+    H_VS_AI = 2
+    AI_VS_H = 3
+    AI_VS_AI = 4
+
+    # Algorithms
+    MINIMAX = iota()
+    ALPHABETA = iota()
+
+    # Heuristics
+    HEURISTIC_SIMPLE = iota()
+    HEURISTIC_COMPLEX = iota()
+
+    # Player modes
+    HUMAN = iota()
+    AI = iota()
+
+    # Private variables
     n = 0
     s = 1
     b = -1
     d1 = 0
     t = 0
     d2 = 0
-    temp = 0
-    a = False
+    temp1 = 0
+    temp2 = 0
+    a1 = False
+    a2 = False
     game_mode = 0
-    num_games = 0
+    r = 0
     current_state = []
+    coords_block = []
+
+    # game statstics counters
+    num_move = 0
+    total_eval_time = 0
+    total_heuristic_eval_count = 0
+    total_ard = 0
+    total_depth_map = {}
+    total_avg_eval_depth = 0
+
+    # scoreboard statstics counters
+    total_win_h1 = 0
+    total_win_h2 = 0
+    total_game_eval_time = 0
+    total_game_heuristic_eval_count = 0
+    total_game_avg_eval_depth = 0
+    total_game_ard = 0
+    total_game_depth_map = {}
+    total_game_moves = 0
 
     def __init__(self, recommend=True):
         self.initialize_game()
@@ -68,18 +112,26 @@ class Game:
             self.t = int(input('Enter the maximum allowed time (in seconds) for the program to return a move: '))
 
         # Number of games to play
-        while self.num_games < 1:
+        while self.r < 1:
             print()
-            self.num_games = int(input('Enter the number of games you wish to play: '))
+            self.r = int(input('Enter the number of games you wish to play: '))
 
         # Boolean for use of minimax or alphabeta
-        while self.temp < 1 or self.temp > 2:
+        while self.temp1 < 1 or self.temp1 > 2:
             print()
-            print('Which type of adversarial search should the program implement?')
+            print('Which type of adversarial search should the player 1 implement?')
             print('\t1- Minimax')
             print('\t2- Alpha-Beta')
-            self.temp = int(input('Enter the number associated with your choice: '))
-        self.a = self.temp == 2
+            self.temp1 = int(input('Enter the number associated with your choice: '))
+        self.a1 = self.temp1 == 2
+
+        while self.temp2 < 1 or self.temp2 > 2:
+            print()
+            print('Which type of adversarial search should the player 2 implement?')
+            print('\t1- Minimax')
+            print('\t2- Alpha-Beta')
+            self.temp2 = int(input('Enter the number associated with your choice: '))
+        self.a2 = self.temp2 == 2
 
         # Game mode
         while self.game_mode < 1 or self.game_mode > 4:
@@ -246,16 +298,26 @@ class Game:
         # It's a tie!
         return '.'
 
-    def check_end(self):
+    def check_end(self, heuristic_x, heuristic_o):
         result = self.is_end()
         # Printing the appropriate message if the game has ended
         if result is not None:
             if result == 'X':
+                if heuristic_x == self.HEURISTIC_SIMPLE:
+                    self.total_win_h1 += 1
+                else:
+                    self.total_win_h2 += 1
                 print('The winner is X!')
             elif result == 'O':
+                if heuristic_o == self.HEURISTIC_SIMPLE:
+                    self.total_win_h1 += 1
+                else:
+                    self.total_win_h2 += 1
                 print('The winner is O!')
             elif result == '.':
                 print("It's a tie!")
+            self.print_and_accumulate_game_statistics()
+
             self.initialize_game()
         return result
 
@@ -276,11 +338,16 @@ class Game:
             print('Enter the location of the block to be placed:')
             px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
             py = int(input(F'enter the y coordinate (0-{self.n - 1}): '))
-            if self.is_valid(py, px):
+            if self.is_valid(px, py):
                 self.current_state[px][py] = '*'
+                block_count
                 block_count += 1
             else:
                 print('This is not a valid location for a block, please try again')
+        print()
+        print('Here is the configuration of your game board:')
+        print()
+        self.draw_board()
 
     def switch_player(self):
         if self.player_turn == 'X':
@@ -349,142 +416,188 @@ class Game:
 
         return heuristic
 
-    def minimax(self, start_time, heuristic, depth=3, max=False):
+    def minimax(self, start_time, heuristic, depth_map, depth=3, max_depth=3, max=False):
         # Minimizing for 'X' and maximizing for 'O'
-        # Possible values are:
-        # -1 - win for 'X'
-        # 0  - a tie
-        # 1  - loss for 'X'
-        # We're initially setting it to 2 or -2 as worse than the worst case:
+        # We're initially setting it to inf or -inf as the worst case
         value = float('inf')
         if max:
             value = -value
         x = y = None
+
+        # Calculate depth
+        current_depth = max_depth - depth
+        if depth_map.get(current_depth) is None:
+            depth_map[current_depth] = 1
+        else:
+            depth_map[current_depth] += 1
 
         # Not enough time left to evaluate
         if (self.t - (time.time() - start_time)) <= 0.002:
-            return value, x, y
+            return value, current_depth, x, y
 
         # Evaluate heuristic at tree leaves or win/loss/tie
         result = self.is_end()
         if result == 'X':
-            return heuristic() + value, x, y
+            return value, current_depth, x, y
         elif result == 'O':
-            return heuristic() + value, x, y
+            return value, current_depth, x, y
         elif result == '.':
-            return 0, x, y
+            return 0, current_depth, x, y
         elif result is None and depth == 0:
-            return heuristic(), x, y
+            return heuristic(), current_depth, x, y
 
         # Build the next layer of the tree
+        count = 0
+        ard_sum = 0
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
-                        (v, _, _) = self.minimax(start_time, heuristic, depth - 1, max=False)
+                        (v, ard, _, _) = self.minimax(start_time=start_time, heuristic=heuristic, depth_map=depth_map, depth=depth - 1, max_depth=max_depth, max=False)
                         if v > value:
                             value = v
                             x = i
                             y = j
                     else:
                         self.current_state[i][j] = 'X'
-                        (v, _, _) = self.minimax(start_time, heuristic, depth - 1, max=True)
+                        (v, ard, _, _) = self.minimax(start_time=start_time, heuristic=heuristic, depth_map=depth_map, depth=depth - 1, max_depth=max_depth, max=True)
                         if v < value:
                             value = v
                             x = i
                             y = j
                     self.current_state[i][j] = '.'
-        return value, x, y
+                    ard_sum += ard
+                    count += 1
 
-    def alphabeta(self, start_time, heuristic, depth=3, alpha=-10000, beta=10000, max=False):
+        # Propagate H, ARD, and move upwards
+        return value, ard_sum / count, x, y
+
+    def alphabeta(self, start_time, heuristic, depth_map, depth=3, max_depth=3, alpha=-float('inf'), beta=float('inf'), max=False):
         # Minimizing for 'X' and maximizing for 'O'
-        # Possible values are:
-        # -1 - win for 'X'
-        # 0  - a tie
-        # 1  - loss for 'X'
-        # We're initially setting it to 2 or -2 as worse than the worst case:
+        # We're initially setting it to inf or -inf as the worst case
         value = float('inf')
         if max:
             value = -value
         x = y = None
 
+        # Calculate depth
+        current_depth = max_depth - depth
+        if depth_map.get(current_depth) is None:
+            depth_map[current_depth] = 1
+        else:
+            depth_map[current_depth] += 1
+
         # Not enough time left to evaluate
-        if (self.t - (time.time() - start_time)) <= 0.001:
-            return value, x, y
+        if (self.t - (time.time() - start_time)) <= 0.002:
+            return value, current_depth, x, y
 
         # Evaluate heuristic at tree leaves or win/loss/tie
         result = self.is_end()
         if result == 'X':
-            return heuristic() + value, x, y
+            return value, current_depth, x, y
         elif result == 'O':
-            return heuristic() + value, x, y
+            return value, current_depth, x, y
         elif result == '.':
-            return 0, x, y
+            return 0, current_depth, x, y
         elif result is None and depth == 0:
-            return heuristic(), x, y
+            return heuristic(), current_depth, x, y
 
         # Build the next layer of the tree
+        count = 0
+        ard_sum = 0
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
-                        (v, _, _) = self.alphabeta(start_time, heuristic, depth - 1, alpha, beta, max=False)
+                        (v, ard, _, _) = self.alphabeta(start_time, heuristic, depth_map, depth - 1, max_depth, alpha, beta, max=False)
                         if v > value:
                             value = v
                             x = i
                             y = j
                     else:
                         self.current_state[i][j] = 'X'
-                        (v, _, _) = self.alphabeta(start_time, heuristic, depth - 1, alpha, beta, max=True)
+                        (v, ard, _, _) = self.alphabeta(start_time, heuristic, depth_map, depth - 1, max_depth, alpha, beta, max=True)
                         if v < value:
                             value = v
                             x = i
                             y = j
                     self.current_state[i][j] = '.'
+                    ard_sum += ard
+                    count += 1
+                    # Alpha-Beta pruning
                     if max:
                         if value >= beta:
-                            return value, x, y
+                            return value, ard_sum / count, x, y
                         if value > alpha:
                             alpha = value
                     else:
                         if value <= alpha:
-                            return value, x, y
+                            return value, ard_sum / count, x, y
                         if value < beta:
                             beta = value
-        return value, x, y
 
-    def play(self, algo=None, player_x=None, player_o=None):
+        # Propagate H, ARD, and move upwards
+        return value, ard_sum / count, x, y
+
+    def play(self, algo_x=None, algo_o=None, heuristic_x=None, heuristic_o=None, player_x=None, player_o=None, swap=False):
 
         # Defaults
-        if algo is None:
-            algo = self.ALPHABETA
+        if algo_x is None:
+            algo_x = self.ALPHABETA
+        if algo_o is None:
+            algo_o = self.MINIMAX
+        if heuristic_x is None:
+            heuristic_x = self.HEURISTIC_SIMPLE
+        if heuristic_o is None:
+            heuristic_o = self.HEURISTIC_SIMPLE
         if player_x is None:
             player_x = self.HUMAN
         if player_o is None:
             player_o = self.HUMAN
 
+        # Swap players if needed
+        if swap:
+            algo_x, algo_o = algo_o, algo_x
+            heuristic_x, heuristic_o = heuristic_o, heuristic_x
+            player_x, player_o = player_o, player_x
+
+        # Pick heuristic functions for each player
+        if heuristic_x == Game.HEURISTIC_SIMPLE:
+            hx_fn = lambda: self.heuristic_simple()
+        else:
+            hx_fn = lambda: self.heuristic_complex()
+        if heuristic_o == Game.HEURISTIC_SIMPLE:
+            ho_fn = lambda: self.heuristic_simple()
+        else:
+            ho_fn = lambda: self.heuristic_complex()
+
+        # Game loop
         while True:
             self.draw_board()
 
             # Game over
-            if self.check_end():
+            if self.check_end(heuristic_x, heuristic_o):
+                self.print_scoreboard()
                 return
 
             # Evaluate recommendation
-            value = x = y = None
+            value = ard = x = y = None
             start = time.time()
-            if algo == self.MINIMAX:
-                if self.player_turn == 'X':
-                    (value, x, y) = self.minimax(start_time=start, heuristic=lambda: self.heuristic_simple(), depth=self.d1, max=False)
-                else:
-                    (value, x, y) = self.minimax(start_time=start, heuristic=lambda: self.heuristic_complex(), depth=self.d2, max=True)
-            elif algo == self.ALPHABETA:
-                if self.player_turn == 'X':
-                    (value, x, y) = self.alphabeta(start_time=start, heuristic=lambda: self.heuristic_simple(), depth=self.d1, max=False)
-                else:
-                    (value, x, y) = self.alphabeta(start_time=start, heuristic=lambda: self.heuristic_complex(), depth=self.d2, max=True)
+            depth_map = {}
+            if self.player_turn == 'X' and algo_x == self.MINIMAX:
+                (value, ard, x, y) = self.minimax(start_time=start, heuristic=hx_fn, depth_map=depth_map,
+                                                  depth=self.d1, max_depth=self.d1, max=False)
+            elif self.player_turn == 'X' and algo_x == self.ALPHABETA:
+                (value, ard, x, y) = self.alphabeta(start_time=start, heuristic=hx_fn, depth_map=depth_map,
+                                                    depth=self.d1, max_depth=self.d1, max=False)
+            elif self.player_turn == 'O' and algo_o == self.MINIMAX:
+                (value, ard, x, y) = self.minimax(start_time=start, heuristic=ho_fn, depth_map=depth_map,
+                                                  depth=self.d2, max_depth=self.d2, max=True)
+            elif self.player_turn == 'O' and algo_o == self.ALPHABETA:
+                (value, ard, x, y) = self.alphabeta(start_time=start, heuristic=ho_fn, depth_map=depth_map,
+                                                    depth=self.d2, max_depth=self.d2, max=True)
             if x is None or y is None:
                 print("Checkmate! Any moves you play will result in a loss.")
                 x, y = self.return_first_spot()
@@ -494,8 +607,7 @@ class Game:
             if (self.player_turn == 'X' and player_x == self.HUMAN) or \
                     (self.player_turn == 'O' and player_o == self.HUMAN):
                 if self.recommend:
-                    print(F'Evaluation time: {round(end - start, 7)}s')
-                    print(F'Recommended move: x = {self.get_letter(x)}, y = {y}')
+                    print(F'Recommended move: {self.get_letter(x)}{y}')
                     print(F'Output value: value = {value}')
                 (x, y) = self.input_move()
 
@@ -505,12 +617,16 @@ class Game:
                 # AI took too long to come up with a move
                 if end - start > self.t:
                     print(F'Game Over! Player {self.player_turn} took too long to pick a move.')
-                    print(F"Player {'O' if self.player_turn == 'X' else 'X'} wins!")
+                    print(F"The winner is {'O' if self.player_turn == 'X' else 'X'}!")
                     self.initialize_game()
                     return
 
-                print(F'Evaluation time: {round(end - start, 7)}s')
-                print(F'Player {self.player_turn} under AI control plays: x = {self.get_letter(x)}, y = {y}')
+                print(F'Player {self.player_turn} under AI control plays: {self.get_letter(x)}{y}')
+
+            # Print move statistics and increment move counter
+            evaluation_time = round(end - start, 7)
+            self.print_and_accumulate_move_statistics(evaluation_time, depth_map, ard)
+            self.num_move += 1
 
             # Play move and switch players
             self.current_state[x][y] = self.player_turn
@@ -523,13 +639,85 @@ class Game:
                     return i, j
         return None
 
+    def print_and_accumulate_move_statistics(self, evaluation_time, depth_map, ard):
+        count = sum(depth_map.values())
+        avg_eval_depth = sum(map(lambda k, v: k * v, depth_map.keys(), depth_map.values())) / count
+        print(F'i\tEvaluation time: {round(evaluation_time, 7)}')
+        print(F'ii\tHeuristic evaluations: {sum(depth_map.values())}')
+        print(F'iii\tEvaluations by depth: {depth_map}')
+        print(F'iv\tAverage evaluation depth: {round(avg_eval_depth, 4)}')
+        print(F'v\tAverage recursion depth: {round(ard, 4)}')
+
+        self.num_move += 1
+        self.total_eval_time += evaluation_time
+        self.total_heuristic_eval_count += count
+        self.total_ard += ard
+        self.total_avg_eval_depth += avg_eval_depth
+
+        for depth, counter in depth_map.items():
+            if self.total_depth_map.get(depth) is None:
+                self.total_depth_map[depth] = counter
+            else:
+                depth_map[depth] += counter
+
+    def print_and_accumulate_game_statistics(self):
+        print(F'i\tAverage evaluation time: {round(self.total_eval_time / self.num_move, 7)}')
+        print(F'ii\tTotal heuristic evaluations: {self.total_heuristic_eval_count}')
+        print(F'iii\tEvaluations by depth: {self.total_depth_map}')
+        print(F'iv\tAverage evaluation depth: {round(self.total_avg_eval_depth / self.num_move, 4)}')
+        print(F'v\tAverage recursion depth: {round(self.total_ard / self.num_move, 4)}')
+        print(F'vi\tTotal moves: {self.num_move}')
+
+        self.total_game_eval_time += self.total_eval_time
+        self.total_game_heuristic_eval_count += self.total_eval_time
+        self.total_game_ard += self.total_ard
+        self.total_game_avg_eval_depth += self.total_avg_eval_depth
+        self.total_game_moves += self.num_move
+
+        for depth, count in self.total_depth_map.items():
+            if self.total_game_depth_map.get(depth) is None:
+                self.total_depth_map[depth] = count
+            else:
+                self.total_game_depth_map[depth] += count
+
+        self.total_eval_time = 0
+        self.total_eval_time = 0
+        self.total_ard = 0
+        self.total_avg_eval_depth = 0
+        self.num_move = 0
+        self.total_depth_map = {}
+
+    def print_scoreboard(self):
+        num_games = 2 * self.r
+
+        print(F'n={self.n} b={self.b} s={self.s} t={self.t}')
+        print('\n')
+        print(F'Player 1: d={self.d1} a={self.a1}')
+        print(F'Player 2: d={self.d2} a={self.a2}')
+        print('\n')
+        print(F'{num_games} game(s)')
+        print('\n')
+        print(F'Total wins for heuristic e1: {self.total_win_h1} ({self.total_win_h1 / num_games * 100}%)(simple)')
+        print(F'Total wins for heuristic e2: {self.total_win_h2} ({self.total_win_h2 / num_games * 100}) (simple)')
+        print('\n')
+        print(F'i\tAverage Evaluation time: {self.total_game_eval_time / self.num_move}')
+        print(F'ii\tTotal Heuristic evaluation: {self.total_game_heuristic_eval_count}')
+        print(F'iii\tEvaluations by depth: {self.total_game_depth_map}')
+        print(F'iv\tAverage evaluation depth: {self.total_game_avg_eval_depth / self.num_move}')
+        print(F'v\tAverage recursion depth: {self.total_game_ard / self.num_move}')
+        print(F'vi\tAverage total moves: {self.total_game_moves / num_games}')
+
 
 def main():
     g = Game(recommend=True)
-    for _ in range(g.num_games):
-        g.play(algo=Game.ALPHABETA if g.a else Game.MINIMAX,
-               player_x=Game.HUMAN if g.game_mode in [1, 2] else Game.AI,
-               player_o=Game.HUMAN if g.game_mode in [1, 3] else Game.AI)
+    for i in range(2 * g.r):
+        g.play(algo_x=Game.ALPHABETA if g.a1 else Game.MINIMAX,
+               algo_o=Game.ALPHABETA if g.a2 else Game.MINIMAX,
+               heuristic_x=Game.HEURISTIC_SIMPLE,
+               heuristic_o=Game.HEURISTIC_COMPLEX,
+               player_x=Game.HUMAN if g.game_mode in [Game.H_VS_H, Game.H_VS_AI] else Game.AI,
+               player_o=Game.HUMAN if g.game_mode in [Game.H_VS_H, Game.AI_VS_H] else Game.AI,
+               swap=i & 0x1 == 1)
 
 
 if __name__ == "__main__":
