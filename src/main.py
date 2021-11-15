@@ -44,7 +44,7 @@ class Game:
     game_mode = 0
     r = 0
     current_state = []
-    coords_block = []
+    block_coords = []
 
     # game statstics counters
     num_move = 0
@@ -90,6 +90,9 @@ class Game:
 
         # set blocks
         self.input_block()
+
+        # draw board with blocks
+        self.draw_blocks()
 
         # get winning line-up size from user
         while (self.s < 3) or (self.s > self.n):
@@ -332,18 +335,22 @@ class Game:
                 print('The move is not valid! Try again.')
 
     def input_block(self):
-        block_count = 0
+        block_count = len(self.block_coords)
+        self.draw_board()
         while block_count < self.b:
-            self.draw_board()
             print('Enter the location of the block to be placed:')
             px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
             py = int(input(F'enter the y coordinate (0-{self.n - 1}): '))
             if self.is_valid(px, py):
-                self.current_state[px][py] = '*'
-                block_count
+                self.block_coords.append((px, py))
                 block_count += 1
             else:
                 print('This is not a valid location for a block, please try again')
+
+    def draw_blocks(self):
+        for coords in self.block_coords:
+            self.current_state[coords[0]][coords[1]] = '*'
+
         print()
         print('Here is the configuration of your game board:')
         print()
@@ -454,14 +461,16 @@ class Game:
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
-                        (v, ard, _, _) = self.minimax(start_time=start_time, heuristic=heuristic, depth_map=depth_map, depth=depth - 1, max_depth=max_depth, max=False)
+                        (v, ard, _, _) = self.minimax(start_time=start_time, heuristic=heuristic, depth_map=depth_map,
+                                                      depth=depth - 1, max_depth=max_depth, max=False)
                         if v > value:
                             value = v
                             x = i
                             y = j
                     else:
                         self.current_state[i][j] = 'X'
-                        (v, ard, _, _) = self.minimax(start_time=start_time, heuristic=heuristic, depth_map=depth_map, depth=depth - 1, max_depth=max_depth, max=True)
+                        (v, ard, _, _) = self.minimax(start_time=start_time, heuristic=heuristic, depth_map=depth_map,
+                                                      depth=depth - 1, max_depth=max_depth, max=True)
                         if v < value:
                             value = v
                             x = i
@@ -473,7 +482,8 @@ class Game:
         # Propagate H, ARD, and move upwards
         return value, ard_sum / count, x, y
 
-    def alphabeta(self, start_time, heuristic, depth_map, depth=3, max_depth=3, alpha=-float('inf'), beta=float('inf'), max=False):
+    def alphabeta(self, start_time, heuristic, depth_map, depth=3, max_depth=3, alpha=-float('inf'), beta=float('inf'),
+                  max=False):
         # Minimizing for 'X' and maximizing for 'O'
         # We're initially setting it to inf or -inf as the worst case
         value = float('inf')
@@ -511,14 +521,16 @@ class Game:
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
-                        (v, ard, _, _) = self.alphabeta(start_time, heuristic, depth_map, depth - 1, max_depth, alpha, beta, max=False)
+                        (v, ard, _, _) = self.alphabeta(start_time, heuristic, depth_map, depth - 1, max_depth, alpha,
+                                                        beta, max=False)
                         if v > value:
                             value = v
                             x = i
                             y = j
                     else:
                         self.current_state[i][j] = 'X'
-                        (v, ard, _, _) = self.alphabeta(start_time, heuristic, depth_map, depth - 1, max_depth, alpha, beta, max=True)
+                        (v, ard, _, _) = self.alphabeta(start_time, heuristic, depth_map, depth - 1, max_depth, alpha,
+                                                        beta, max=True)
                         if v < value:
                             value = v
                             x = i
@@ -541,7 +553,8 @@ class Game:
         # Propagate H, ARD, and move upwards
         return value, ard_sum / count, x, y
 
-    def play(self, algo_x=None, algo_o=None, heuristic_x=None, heuristic_o=None, player_x=None, player_o=None, swap=False):
+    def play(self, algo_x=None, algo_o=None, heuristic_x=None, heuristic_o=None, player_x=None, player_o=None,
+             swap=False):
 
         # Defaults
         if algo_x is None:
@@ -654,11 +667,11 @@ class Game:
         self.total_ard += ard
         self.total_avg_eval_depth += avg_eval_depth
 
-        for depth, counter in depth_map.items():
+        for depth, count in depth_map.items():
             if self.total_depth_map.get(depth) is None:
-                self.total_depth_map[depth] = counter
+                self.total_depth_map[depth] = count
             else:
-                depth_map[depth] += counter
+                depth_map[depth] += count
 
     def print_and_accumulate_game_statistics(self):
         print(F'i\tAverage evaluation time: {round(self.total_eval_time / self.num_move, 7)}')
@@ -697,14 +710,14 @@ class Game:
         print('\n')
         print(F'{num_games} game(s)')
         print('\n')
-        print(F'Total wins for heuristic e1: {self.total_win_h1} ({self.total_win_h1 / num_games * 100}%)(simple)')
-        print(F'Total wins for heuristic e2: {self.total_win_h2} ({self.total_win_h2 / num_games * 100}) (simple)')
+        print(F'Total wins for heuristic e1: {self.total_win_h1} ({self.total_win_h1 / num_games * 100}%) (simple)')
+        print(F'Total wins for heuristic e2: {self.total_win_h2} ({self.total_win_h2 / num_games * 100}%) (complex)')
         print('\n')
-        print(F'i\tAverage Evaluation time: {self.total_game_eval_time / self.num_move}')
+        print(F'i\tAverage Evaluation time: {self.total_game_eval_time / num_games}')
         print(F'ii\tTotal Heuristic evaluation: {self.total_game_heuristic_eval_count}')
         print(F'iii\tEvaluations by depth: {self.total_game_depth_map}')
-        print(F'iv\tAverage evaluation depth: {self.total_game_avg_eval_depth / self.num_move}')
-        print(F'v\tAverage recursion depth: {self.total_game_ard / self.num_move}')
+        print(F'iv\tAverage evaluation depth: {self.total_game_avg_eval_depth / num_games}')
+        print(F'v\tAverage recursion depth: {self.total_game_ard / num_games}')
         print(F'vi\tAverage total moves: {self.total_game_moves / num_games}')
 
 
