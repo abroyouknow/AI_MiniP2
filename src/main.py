@@ -334,6 +334,7 @@ class Game:
             px = self.get_index(input(F'Enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
             py = int(input(F'Enter the y coordinate (0-{self.n - 1}): '))
             if self.is_valid(px, py):
+                self.current_state[px][py] = '*'
                 self.block_coords.append((px, py))
                 block_count += 1
                 self.draw_board()
