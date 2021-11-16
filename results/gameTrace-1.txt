@@ -1,0 +1,93 @@
+n = 4 b = 4 s = 3 t = 5
+blocks = [(0, 0), (0, 3), (3, 0), (3, 3)]
+
+
+Player 1: d = 6 a = False heuristic = complex
+Player 2: d = 6 a = False heuristic = simple
+
+
+
+   ABCD
+  +----
+0 |....
+1 |....
+2 |....
+3 |....
+
+Player X under AI control plays: A2
+i	Evaluation time: 4.9989929
+ii	Heuristic evaluations: 404971
+iii	Evaluations by depth: {0: 1, 1: 16, 2: 30, 3: 224, 4: 2873, 5: 34416, 6: 367411}
+iv	Average evaluation depth: 5.8987
+v	Average recursion depth: 1.3868
+
+   ABCD
+  +----
+0 |....
+1 |....
+2 |X...
+3 |....
+
+Player O under AI control plays: B0
+i	Evaluation time: 4.998049
+ii	Heuristic evaluations: 617076
+iii	Evaluations by depth: {0: 1, 1: 15, 2: 42, 3: 455, 4: 5328, 5: 56705, 6: 554530}
+iv	Average evaluation depth: 5.8882
+v	Average recursion depth: 1.8405
+
+   ABCD
+  +----
+0 |.O..
+1 |....
+2 |X...
+3 |....
+
+Player X under AI control plays: A0
+i	Evaluation time: 4.9989469
+ii	Heuristic evaluations: 494898
+iii	Evaluations by depth: {0: 1, 1: 14, 2: 52, 3: 612, 4: 6039, 5: 57620, 6: 430560}
+iv	Average evaluation depth: 5.8549
+v	Average recursion depth: 2.2563
+
+   ABCD
+  +----
+0 |XO..
+1 |....
+2 |X...
+3 |....
+
+Player O under AI control plays: D0
+i	Evaluation time: 4.9980011
+ii	Heuristic evaluations: 660307
+iii	Evaluations by depth: {0: 1, 1: 13, 2: 108, 3: 1067, 4: 10270, 5: 81432, 6: 567416}
+iv	Average evaluation depth: 5.84
+v	Average recursion depth: 3.8991
+
+   ABCD
+  +----
+0 |XO.O
+1 |....
+2 |X...
+3 |....
+
+Player X under AI control plays: A1
+i	Evaluation time: 3.323005
+ii	Heuristic evaluations: 376674
+iii	Evaluations by depth: {0: 1, 1: 12, 2: 121, 3: 1110, 4: 8586, 5: 58144, 6: 308700}
+iv	Average evaluation depth: 5.7897
+v	Average recursion depth: 4.5561
+
+   ABCD
+  +----
+0 |XO.O
+1 |X...
+2 |X...
+3 |....
+
+The winner is X!
+i	Average evaluation time: 2.3316995
+ii	Total heuristic evaluations: 3642102
+iii	Evaluations by depth: {0: 1, 1: 16, 2: 30, 3: 224, 4: 2873, 5: 34416, 6: 367411}
+iv	Average evaluation depth: 2.9271
+v	Average recursion depth: 1.3939
+vi	Total moves: 10

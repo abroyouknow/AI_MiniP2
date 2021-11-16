@@ -1,5 +1,5 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
-
+import sys
 import time
 
 counter = 4
@@ -42,7 +42,6 @@ class Game:
     a1 = False
     a2 = False
     game_mode = 0
-    r = 0
     current_state = []
     block_coords = []
 
@@ -65,7 +64,6 @@ class Game:
     total_game_moves = 0
 
     def __init__(self, recommend=True):
-        self.initialize_game()
         self.recommend = recommend
 
     def initialize_game(self):
@@ -91,9 +89,6 @@ class Game:
         # set blocks
         self.input_block()
 
-        # draw board with blocks
-        self.draw_blocks()
-
         # get winning line-up size from user
         while (self.s < 3) or (self.s > self.n):
             print()
@@ -113,11 +108,6 @@ class Game:
         while self.t < 1:
             print()
             self.t = int(input('Enter the maximum allowed time (in seconds) for the program to return a move: '))
-
-        # Number of games to play
-        while self.r < 1:
-            print()
-            self.r = int(input('Enter the number of games you wish to play: '))
 
         # Boolean for use of minimax or alphabeta
         while self.temp1 < 1 or self.temp1 > 2:
@@ -320,15 +310,14 @@ class Game:
             elif result == '.':
                 print("It's a tie!")
             self.print_and_accumulate_game_statistics()
-
-            self.initialize_game()
         return result
 
     def input_move(self):
         while True:
+            print()
             print(F'Player {self.player_turn}, enter your move:')
-            px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
-            py = int(input(F'enter the y coordinate (0-{self.n - 1}): '))
+            px = self.get_index(input(F'Enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
+            py = int(input(F'Enter the y coordinate (0-{self.n - 1}): '))
             if self.is_valid(px, py):
                 return px, py
             else:
@@ -336,25 +325,20 @@ class Game:
 
     def input_block(self):
         block_count = len(self.block_coords)
-        self.draw_board()
+        if block_count <= 0:
+            self.draw_board()
         while block_count < self.b:
+            print()
             print('Enter the location of the block to be placed:')
-            px = self.get_index(input(F'enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
-            py = int(input(F'enter the y coordinate (0-{self.n - 1}): '))
+            px = self.get_index(input(F'Enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
+            py = int(input(F'Enter the y coordinate (0-{self.n - 1}): '))
             if self.is_valid(px, py):
+                self.current_state[px][py] = '*'
                 self.block_coords.append((px, py))
                 block_count += 1
+                self.draw_board()
             else:
                 print('This is not a valid location for a block, please try again')
-
-    def draw_blocks(self):
-        for coords in self.block_coords:
-            self.current_state[coords[0]][coords[1]] = '*'
-
-        print()
-        print('Here is the configuration of your game board:')
-        print()
-        self.draw_board()
 
     def switch_player(self):
         if self.player_turn == 'X':
@@ -592,7 +576,6 @@ class Game:
 
             # Game over
             if self.check_end(heuristic_x, heuristic_o):
-                self.print_scoreboard()
                 return
 
             # Evaluate recommendation
@@ -631,7 +614,6 @@ class Game:
                 if end - start > self.t:
                     print(F'Game Over! Player {self.player_turn} took too long to pick a move.')
                     print(F"The winner is {'O' if self.player_turn == 'X' else 'X'}!")
-                    self.initialize_game()
                     return
 
                 print(F'Player {self.player_turn} under AI control plays: {self.get_letter(x)}{y}')
@@ -700,8 +682,8 @@ class Game:
         self.num_move = 0
         self.total_depth_map = {}
 
-    def print_scoreboard(self):
-        num_games = 2 * self.r
+    def print_scoreboard(self, r):
+        num_games = 2 * r
 
         print(F'n={self.n} b={self.b} s={self.s} t={self.t}')
         print('\n')
@@ -723,15 +705,48 @@ class Game:
 
 def main():
     g = Game(recommend=True)
-    for i in range(2 * g.r):
+
+    # Number of games to play
+    r = 0
+    while r < 1:
+        print()
+        r = int(input('Enter the number of games you wish to play: '))
+
+    console = sys.stdout
+
+    for i in range(2 * r):
+        # Init game in console
+        sys.stdout = console
+        g.initialize_game()
+
+        # Switch to file for game trace
+        if g.game_mode == Game.AI_VS_AI:
+            # Open output file and redirect stdout to it
+            game_file = open(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}-{i}.txt', 'w')
+            sys.stdout = game_file
+
+        # Draw initial board
+        swap = i & 0x1 == 1
+        print(F'n = {g.n} b = {g.b} s = {g.s} t = {g.t}')
+        print(F'blocks = {g.block_coords}')
+        print('\n')
+        print(F"Player 1: d = {g.d1} a = {g.a1} heuristic = {'simple' if not swap else 'complex'}")
+        print(F"Player 2: d = {g.d1} a = {g.a1} heuristic = {'simple' if swap else 'complex'}")
+        print('\n')
         g.play(algo_x=Game.ALPHABETA if g.a1 else Game.MINIMAX,
                algo_o=Game.ALPHABETA if g.a2 else Game.MINIMAX,
                heuristic_x=Game.HEURISTIC_SIMPLE,
                heuristic_o=Game.HEURISTIC_COMPLEX,
                player_x=Game.HUMAN if g.game_mode in [Game.H_VS_H, Game.H_VS_AI] else Game.AI,
                player_o=Game.HUMAN if g.game_mode in [Game.H_VS_H, Game.AI_VS_H] else Game.AI,
-               swap=i & 0x1 == 1)
+               swap=swap)
 
+    if g.game_mode == Game.AI_VS_AI:
+        # Open output file and redirect stdout to it
+        score_board_file = open(F'../results/scoreboard-{g.n}{g.b}{g.s}{g.t}.txt', 'w')
+        sys.stdout = score_board_file
+
+    g.print_scoreboard(r)
 
 if __name__ == "__main__":
     main()
