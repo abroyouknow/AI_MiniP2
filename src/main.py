@@ -665,14 +665,14 @@ class Game:
         print(F'vi\tTotal moves: {self.num_move}')
 
         self.total_game_eval_time += self.total_eval_time
-        self.total_game_heuristic_eval_count += self.total_eval_time
-        self.total_game_ard += self.total_ard
-        self.total_game_avg_eval_depth += self.total_avg_eval_depth
+        self.total_game_heuristic_eval_count += self.total_heuristic_eval_count
+        self.total_game_ard += self.total_ard / self.num_move
+        self.total_game_avg_eval_depth += self.total_avg_eval_depth / self.num_move
         self.total_game_moves += self.num_move
 
         for depth, count in self.total_depth_map.items():
             if self.total_game_depth_map.get(depth) is None:
-                self.total_depth_map[depth] = count
+                self.total_game_depth_map[depth] = count
             else:
                 self.total_game_depth_map[depth] += count
 
