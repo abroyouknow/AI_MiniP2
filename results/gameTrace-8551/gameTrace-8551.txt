@@ -3,7 +3,7 @@ blocks = [(0, 4), (3, 1), (5, 6), (2, 2), (7, 3)]
 
 
 Player 1: d = 2 a = True heuristic = simple
-Player 2: d = 2 a = True heuristic = complex
+Player 2: d = 6 a = True heuristic = complex
 
 
 
@@ -19,7 +19,7 @@ Player 2: d = 2 a = True heuristic = complex
 7 |........
 
 Player X under AI control plays: B3
-i	Evaluation time: 0.0079999
+i	Evaluation time: 0.0040009
 ii	Heuristic evaluations: 523
 iii	Evaluations by depth: {1: 59, 2: 464}
 iv	Average evaluation depth: 1.8872
@@ -37,11 +37,11 @@ v	Average recursion depth: 2.0
 7 |........
 
 Player O under AI control plays: A1
-i	Evaluation time: 0.998219
-ii	Heuristic evaluations: 87688
-iii	Evaluations by depth: {1: 2, 2: 2, 3: 7, 4: 170, 5: 3449, 6: 84058}
-iv	Average evaluation depth: 5.9563
-v	Average recursion depth: 2.3858
+i	Evaluation time: 0.9982829
+ii	Heuristic evaluations: 89523
+iii	Evaluations by depth: {1: 2, 2: 2, 3: 7, 4: 174, 5: 3509, 6: 85829}
+iv	Average evaluation depth: 5.9565
+v	Average recursion depth: 2.3873
 
    ABCDEFGH
   +--------
@@ -55,7 +55,7 @@ v	Average recursion depth: 2.3858
 7 |........
 
 Player X under AI control plays: B4
-i	Evaluation time: 0.0040011
+i	Evaluation time: 0.0040002
 ii	Heuristic evaluations: 462
 iii	Evaluations by depth: {1: 57, 2: 405}
 iv	Average evaluation depth: 1.8766
@@ -73,11 +73,11 @@ v	Average recursion depth: 2.0
 7 |........
 
 Player O under AI control plays: A2
-i	Evaluation time: 0.998364
-ii	Heuristic evaluations: 89291
-iii	Evaluations by depth: {1: 2, 2: 2, 3: 8, 4: 180, 5: 3634, 6: 85465}
+i	Evaluation time: 0.998935
+ii	Heuristic evaluations: 90719
+iii	Evaluations by depth: {1: 2, 2: 2, 3: 8, 4: 184, 5: 3686, 6: 86837}
 iv	Average evaluation depth: 5.9548
-v	Average recursion depth: 2.3998
+v	Average recursion depth: 2.4013
 
    ABCDEFGH
   +--------
@@ -109,11 +109,11 @@ v	Average recursion depth: 2.0
 7 |........
 
 Player O under AI control plays: A3
-i	Evaluation time: 0.9987371
-ii	Heuristic evaluations: 87633
-iii	Evaluations by depth: {1: 2, 2: 2, 3: 9, 4: 260, 5: 4017, 6: 83343}
-iv	Average evaluation depth: 5.9477
-v	Average recursion depth: 2.401
+i	Evaluation time: 0.9986458
+ii	Heuristic evaluations: 89871
+iii	Evaluations by depth: {1: 2, 2: 2, 3: 9, 4: 268, 5: 4177, 6: 85413}
+iv	Average evaluation depth: 5.9471
+v	Average recursion depth: 2.4118
 
    ABCDEFGH
   +--------
@@ -127,7 +127,7 @@ v	Average recursion depth: 2.401
 7 |........
 
 Player X under AI control plays: B1
-i	Evaluation time: 0.003
+i	Evaluation time: 0.0029969
 ii	Heuristic evaluations: 208
 iii	Evaluations by depth: {1: 53, 2: 155}
 iv	Average evaluation depth: 1.7452
@@ -144,12 +144,12 @@ v	Average recursion depth: 2.0
 6 |.....*..
 7 |........
 
-Player O under AI control plays: A6
-i	Evaluation time: 0.9985402
-ii	Heuristic evaluations: 91335
-iii	Evaluations by depth: {1: 3, 2: 8, 3: 207, 4: 795, 5: 8184, 6: 82138}
-iv	Average evaluation depth: 5.8857
-v	Average recursion depth: 3.3134
+Player O under AI control plays: A7
+i	Evaluation time: 0.9981639
+ii	Heuristic evaluations: 98720
+iii	Evaluations by depth: {1: 4, 2: 10, 3: 210, 4: 835, 5: 8542, 6: 89119}
+iv	Average evaluation depth: 5.8896
+v	Average recursion depth: 3.3515
 
    ABCDEFGH
   +--------
@@ -159,8 +159,8 @@ v	Average recursion depth: 3.3134
 3 |OX.....*
 4 |*X......
 5 |........
-6 |O....*..
-7 |........
+6 |.....*..
+7 |O.......
 
 Player X under AI control plays: B2
 i	Evaluation time: 0.0009999
@@ -177,13 +177,13 @@ v	Average recursion depth: 1.75
 3 |OX.....*
 4 |*X......
 5 |........
-6 |O....*..
-7 |........
+6 |.....*..
+7 |O.......
 
 The winner is X!
-i	Average evaluation time: 0.4458735
-ii	Total heuristic evaluations: 357465
-iii	Evaluations by depth: {1: 237, 2: 1304, 3: 231, 4: 1405, 5: 19284, 6: 335004}
-iv	Average evaluation depth: 3.6642
-v	Average recursion depth: 2.25
+i	Average evaluation time: 0.4454473
+ii	Total heuristic evaluations: 370351
+iii	Evaluations by depth: {1: 238, 2: 1306, 3: 234, 4: 1461, 5: 19914, 6: 347198}
+iv	Average evaluation depth: 3.6646
+v	Average recursion depth: 2.2558
 vi	Total moves: 9
