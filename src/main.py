@@ -719,6 +719,9 @@ def main():
         sys.stdout = console
         g.initialize_game()
 
+        print()
+        print(F'Playing Game {i + 1}...')
+
         # Switch to file for game trace
         if g.game_mode == Game.AI_VS_AI:
             # Open output file and redirect stdout to it
