@@ -326,7 +326,7 @@ class Game:
 
     def input_block(self):
         block_count = len(self.block_coords)
-        if block_count <= 0:
+        if block_count != self.b:
             self.draw_board()
         while block_count < self.b:
             print()
@@ -418,10 +418,11 @@ class Game:
 
         # Calculate depth
         current_depth = max_depth - depth
-        if depth_map.get(current_depth) is None:
-            depth_map[current_depth] = 1
-        else:
-            depth_map[current_depth] += 1
+        if current_depth > 0:
+            if depth_map.get(current_depth) is None:
+                depth_map[current_depth] = 1
+            else:
+                depth_map[current_depth] += 1
 
         # Not enough time left to evaluate
         if (self.t - (time.time() - start_time)) <= 0.002:
@@ -478,10 +479,11 @@ class Game:
 
         # Calculate depth
         current_depth = max_depth - depth
-        if depth_map.get(current_depth) is None:
-            depth_map[current_depth] = 1
-        else:
-            depth_map[current_depth] += 1
+        if current_depth > 0:
+            if depth_map.get(current_depth) is None:
+                depth_map[current_depth] = 1
+            else:
+                depth_map[current_depth] += 1
 
         # Not enough time left to evaluate
         if (self.t - (time.time() - start_time)) <= 0.002:
@@ -648,7 +650,6 @@ class Game:
         print(F'iv\tAverage evaluation depth: {round(avg_eval_depth, 4)}')
         print(F'v\tAverage recursion depth: {round(ard, 4)}')
 
-        self.num_move += 1
         self.total_eval_time += evaluation_time
         self.total_heuristic_eval_count += count
         self.total_ard += ard
@@ -658,7 +659,7 @@ class Game:
             if self.total_depth_map.get(depth) is None:
                 self.total_depth_map[depth] = count
             else:
-                depth_map[depth] += count
+                self.total_depth_map[depth] += count
 
     def print_and_accumulate_game_statistics(self):
         print(F'i\tAverage evaluation time: {round(self.total_eval_time / self.num_move, 7)}')
@@ -681,7 +682,7 @@ class Game:
                 self.total_game_depth_map[depth] += count
 
         self.total_eval_time = 0
-        self.total_eval_time = 0
+        self.total_heuristic_eval_count = 0
         self.total_ard = 0
         self.total_avg_eval_depth = 0
         self.num_move = 0
@@ -703,9 +704,9 @@ class Game:
         print(F'i\tAverage evaluation time: {self.total_game_eval_time / num_games}')
         print(F'ii\tTotal heuristic evaluations: {self.total_game_heuristic_eval_count}')
         print(F'iii\tEvaluations by depth: {self.total_game_depth_map}')
-        print(F'iv\tAverage evaluation depth: {self.total_game_avg_eval_depth / num_games}')
-        print(F'v\tAverage recursion depth: {self.total_game_ard / num_games}')
-        print(F'vi\tAverage total moves: {self.total_game_moves / num_games}')
+        print(F'iv\tAverage evaluation depth: {round(self.total_game_avg_eval_depth / num_games, 4)}')
+        print(F'v\tAverage recursion depth: {round(self.total_game_ard / num_games, 4)}')
+        print(F'vi\tAverage total moves: {round(self.total_game_moves / num_games, 4)}')
 
 
 def create_dirs(dir):
