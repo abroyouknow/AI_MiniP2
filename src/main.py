@@ -556,10 +556,14 @@ class Game:
             player_o = self.HUMAN
 
         # Swap players if needed
+        dx = self.d1
+        do = self.d2
         if swap:
             algo_x, algo_o = algo_o, algo_x
             heuristic_x, heuristic_o = heuristic_o, heuristic_x
             player_x, player_o = player_o, player_x
+            dx = self.d2
+            do = self.d1
 
         # Pick heuristic functions for each player
         if heuristic_x == Game.HEURISTIC_SIMPLE:
@@ -585,16 +589,16 @@ class Game:
             depth_map = {}
             if self.player_turn == 'X' and algo_x == self.MINIMAX:
                 (value, ard, x, y) = self.minimax(start_time=start, heuristic=hx_fn, depth_map=depth_map,
-                                                  depth=self.d1, max_depth=self.d1, max=False)
+                                                  depth=dx, max_depth=dx, max=False)
             elif self.player_turn == 'X' and algo_x == self.ALPHABETA:
                 (value, ard, x, y) = self.alphabeta(start_time=start, heuristic=hx_fn, depth_map=depth_map,
-                                                    depth=self.d1, max_depth=self.d1, max=False)
+                                                    depth=dx, max_depth=dx, max=False)
             elif self.player_turn == 'O' and algo_o == self.MINIMAX:
                 (value, ard, x, y) = self.minimax(start_time=start, heuristic=ho_fn, depth_map=depth_map,
-                                                  depth=self.d2, max_depth=self.d2, max=True)
+                                                  depth=do, max_depth=do, max=True)
             elif self.player_turn == 'O' and algo_o == self.ALPHABETA:
                 (value, ard, x, y) = self.alphabeta(start_time=start, heuristic=ho_fn, depth_map=depth_map,
-                                                    depth=self.d2, max_depth=self.d2, max=True)
+                                                    depth=do, max_depth=do, max=True)
             if x is None or y is None:
                 print("Checkmate! Any moves you play will result in a loss.")
                 x, y = self.return_first_spot()
