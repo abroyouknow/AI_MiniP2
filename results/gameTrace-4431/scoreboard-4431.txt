@@ -12,9 +12,9 @@ Total wins for heuristic e1: 5 (50.0%) (simple)
 Total wins for heuristic e2: 5 (50.0%) (complex)
 
 
-i	Average evaluation time: 0.2513375299999999
-ii	Total heuristic evaluations: 538444
-iii	Evaluations by depth: {1: 493, 2: 1391, 3: 8137, 4: 30474, 5: 150264, 6: 347685}
-iv	Average evaluation depth: 5.0763
-v	Average recursion depth: 4.6727
+i	Average evaluation time: 0.15080401000000004
+ii	Total heuristic evaluations: 240770
+iii	Evaluations by depth: {1: 340, 2: 900, 3: 4575, 4: 14860, 5: 60805, 6: 159290}
+iv	Average evaluation depth: 3.6351
+v	Average recursion depth: 3.7978
 vi	Average total moves: 7.0

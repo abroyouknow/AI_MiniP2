@@ -8,13 +8,13 @@ Player 2: d=6 a=True
 10 game(s)
 
 
-Total wins for heuristic e1: 3 (30.0%) (simple)
+Total wins for heuristic e1: 0 (0.0%) (simple)
 Total wins for heuristic e2: 0 (0.0%) (complex)
 
 
-i	Average evaluation time: 11.61407624
-ii	Total heuristic evaluations: 36037774
-iii	Evaluations by depth: {1: 2763, 2: 13689, 3: 118211, 4: 684101, 5: 5066508, 6: 30152502}
-iv	Average evaluation depth: 4.9189
-v	Average recursion depth: 4.9883
-vi	Average total moves: 22.4
+i	Average evaluation time: 2.2169181699999996
+ii	Total heuristic evaluations: 7765545
+iii	Evaluations by depth: {1: 2310, 2: 8035, 3: 60695, 4: 240035, 5: 1509035, 6: 5945435}
+iv	Average evaluation depth: 4.7212
+v	Average recursion depth: 5.2156
+vi	Average total moves: 21.0

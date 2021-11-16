@@ -752,7 +752,7 @@ def main():
         print(F'blocks = {g.block_coords}')
         print('\n')
         print(F"Player 1: d = {g.d1} a = {g.a1} heuristic = {'simple' if not swap else 'complex'}")
-        print(F"Player 2: d = {g.d1} a = {g.a1} heuristic = {'simple' if swap else 'complex'}")
+        print(F"Player 2: d = {g.d2} a = {g.a1} heuristic = {'simple' if swap else 'complex'}")
         print('\n')
         g.play(algo_x=Game.ALPHABETA if g.a1 else Game.MINIMAX,
                algo_o=Game.ALPHABETA if g.a2 else Game.MINIMAX,

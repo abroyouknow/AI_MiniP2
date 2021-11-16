@@ -9,144 +9,116 @@ Player 2: d = 6 a = False heuristic = complex
 
    ABCD
   +----
-0 |....
+0 |*..*
 1 |....
 2 |....
-3 |....
+3 |*..*
 
 Player X under AI control plays: B1
-i	Evaluation time: 4.9982879
-ii	Heuristic evaluations: 2497976
-iii	Evaluations by depth: {1: 16, 2: 105, 3: 1386, 4: 17901, 5: 214812, 6: 2263756}
-iv	Average evaluation depth: 5.8978
-v	Average recursion depth: 3.0623
+i	Evaluation time: 1.4983561
+ii	Heuristic evaluations: 737376
+iii	Evaluations by depth: {1: 12, 2: 132, 3: 1320, 4: 11880, 5: 95040, 6: 628992}
+iv	Average evaluation depth: 5.8327
+v	Average recursion depth: 5.9455
 
    ABCD
   +----
-0 |....
+0 |*..*
 1 |.X..
 2 |....
-3 |....
+3 |*..*
 
-Player O under AI control plays: C1
-i	Evaluation time: 4.998625
-ii	Heuristic evaluations: 1897038
-iii	Evaluations by depth: {1: 15, 2: 112, 3: 1443, 4: 17172, 5: 176286, 6: 1702010}
-iv	Average evaluation depth: 5.8864
+Checkmate! Any moves you play will result in a loss.
+Player O under AI control plays: A1
+i	Evaluation time: 0.8599958
+ii	Heuristic evaluations: 348943
+iii	Evaluations by depth: {1: 11, 2: 110, 3: 990, 4: 7920, 5: 50400, 6: 289512}
+iv	Average evaluation depth: 5.8002
+v	Average recursion depth: 5.7794
+
+   ABCD
+  +----
+0 |*..*
+1 |OX..
+2 |....
+3 |*..*
+
+Player X under AI control plays: A2
+i	Evaluation time: 0.2620728
+ii	Heuristic evaluations: 134460
+iii	Evaluations by depth: {1: 10, 2: 90, 3: 720, 4: 4592, 5: 26928, 6: 102120}
+iv	Average evaluation depth: 5.7123
+v	Average recursion depth: 5.477
+
+   ABCD
+  +----
+0 |*..*
+1 |OX..
+2 |X...
+3 |*..*
+
+Checkmate! Any moves you play will result in a loss.
+Player O under AI control plays: B0
+i	Evaluation time: 0.0970109
+ii	Heuristic evaluations: 47649
+iii	Evaluations by depth: {1: 9, 2: 72, 3: 448, 4: 2616, 5: 9800, 6: 34704}
+iv	Average evaluation depth: 5.6493
+v	Average recursion depth: 4.9759
+
+   ABCD
+  +----
+0 |*O.*
+1 |OX..
+2 |X...
+3 |*..*
+
+Player X under AI control plays: B2
+i	Evaluation time: 0.02
+ii	Heuristic evaluations: 11959
+iii	Evaluations by depth: {1: 8, 2: 49, 3: 294, 4: 1080, 5: 4048, 6: 6480}
+iv	Average evaluation depth: 5.3874
+v	Average recursion depth: 4.3167
+
+   ABCD
+  +----
+0 |*O.*
+1 |OX..
+2 |XX..
+3 |*..*
+
+Checkmate! Any moves you play will result in a loss.
+Player O under AI control plays: B3
+i	Evaluation time: 0.003
+ii	Heuristic evaluations: 2181
+iii	Evaluations by depth: {1: 7, 2: 42, 3: 120, 4: 464, 5: 588, 6: 960}
+iv	Average evaluation depth: 5.0468
 v	Average recursion depth: 3.5476
 
    ABCD
   +----
-0 |....
-1 |.XO.
-2 |....
-3 |....
-
-Player X under AI control plays: A2
-i	Evaluation time: 3.63269
-ii	Heuristic evaluations: 1886416
-iii	Evaluations by depth: {1: 14, 2: 182, 3: 2184, 4: 22704, 5: 214440, 6: 1646892}
-iv	Average evaluation depth: 5.8584
-v	Average recursion depth: 5.5994
-
-   ABCD
-  +----
-0 |....
-1 |.XO.
-2 |X...
-3 |....
-
-Checkmate! Any moves you play will result in a loss.
-Player O under AI control plays: A0
-i	Evaluation time: 1.9879448
-ii	Heuristic evaluations: 853465
-iii	Evaluations by depth: {1: 13, 2: 156, 3: 1584, 4: 14820, 5: 109116, 6: 727776}
-iv	Average evaluation depth: 5.831
-v	Average recursion depth: 5.0823
-
-   ABCD
-  +----
-0 |O...
-1 |.XO.
-2 |X...
-3 |....
-
-Player X under AI control plays: A1
-i	Evaluation time: 0.7330191
-ii	Heuristic evaluations: 396027
-iii	Evaluations by depth: {1: 12, 2: 121, 3: 1210, 4: 9000, 5: 65056, 6: 320628}
-iv	Average evaluation depth: 5.7797
-v	Average recursion depth: 4.7574
-
-   ABCD
-  +----
-0 |O...
-1 |XXO.
-2 |X...
-3 |....
-
-Checkmate! Any moves you play will result in a loss.
-Player O under AI control plays: A3
-i	Evaluation time: 0.3050001
-ii	Heuristic evaluations: 154843
-iii	Evaluations by depth: {1: 11, 2: 110, 3: 810, 4: 5760, 5: 27552, 6: 120600}
-iv	Average evaluation depth: 5.7288
-v	Average recursion depth: 4.405
-
-   ABCD
-  +----
-0 |O...
-1 |XXO.
-2 |X...
-3 |O...
-
-Player X under AI control plays: B2
-i	Evaluation time: 0.089999
-ii	Heuristic evaluations: 58693
-iii	Evaluations by depth: {1: 10, 2: 81, 3: 584, 4: 3094, 5: 13824, 6: 41100}
-iv	Average evaluation depth: 5.6228
-v	Average recursion depth: 4.054
-
-   ABCD
-  +----
-0 |O...
-1 |XXO.
+0 |*O.*
+1 |OX..
 2 |XX..
-3 |O...
+3 |*O.*
 
-Checkmate! Any moves you play will result in a loss.
-Player O under AI control plays: B0
-i	Evaluation time: 0.0079999
-ii	Heuristic evaluations: 7865
-iii	Evaluations by depth: {1: 9, 2: 72, 3: 224, 4: 1116, 5: 1980, 6: 4464}
-iv	Average evaluation depth: 5.3367
-v	Average recursion depth: 3.0183
-
-   ABCD
-  +----
-0 |OO..
-1 |XXO.
-2 |XX..
-3 |O...
-
-Player X under AI control plays: B3
-i	Evaluation time: 0.0009999
-ii	Heuristic evaluations: 1188
-iii	Evaluations by depth: {1: 8, 2: 28, 3: 126, 4: 270, 5: 576, 6: 180}
-iv	Average evaluation depth: 4.6145
-v	Average recursion depth: 2.1304
+Player X under AI control plays: C0
+i	Evaluation time: 0.0
+ii	Heuristic evaluations: 494
+iii	Evaluations by depth: {1: 6, 2: 20, 3: 80, 4: 120, 5: 208, 6: 60}
+iv	Average evaluation depth: 4.3846
+v	Average recursion depth: 3.0389
 
    ABCD
   +----
-0 |OO..
-1 |XXO.
+0 |*OX*
+1 |OX..
 2 |XX..
-3 |OX..
+3 |*O.*
 
 The winner is X!
-i	Average evaluation time: 1.8616184
-ii	Total heuristic evaluations: 7753511
-iii	Evaluations by depth: {1: 108, 2: 967, 3: 9551, 4: 91837, 5: 823642, 6: 6827406}
-iv	Average evaluation depth: 5.6173
-v	Average recursion depth: 3.9618
-vi	Total moves: 9
+i	Average evaluation time: 0.3914908
+ii	Total heuristic evaluations: 1283062
+iii	Evaluations by depth: {1: 63, 2: 515, 3: 3972, 4: 28672, 5: 187012, 6: 1062828}
+iv	Average evaluation depth: 5.4019
+v	Average recursion depth: 4.7259
+vi	Total moves: 7
