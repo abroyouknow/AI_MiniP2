@@ -1,4 +1,5 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
+import os
 import sys
 import time
 
@@ -703,6 +704,13 @@ class Game:
         print(F'vi\tAverage total moves: {self.total_game_moves / num_games}')
 
 
+def create_dirs(dir):
+    try:
+        os.makedirs(dir)
+    except FileExistsError:
+        pass
+
+
 def main():
     g = Game(recommend=True)
 
@@ -725,6 +733,7 @@ def main():
         # Switch to file for game trace
         if g.game_mode == Game.AI_VS_AI:
             # Open output file and redirect stdout to it
+            create_dirs(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}')
             game_file = open(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}/gameTrace-{g.n}{g.b}{g.s}{g.t}-{i}.txt', 'w')
             sys.stdout = game_file
 
@@ -746,6 +755,7 @@ def main():
 
     if g.game_mode == Game.AI_VS_AI:
         # Open output file and redirect stdout to it
+        create_dirs(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}')
         score_board_file = open(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}/scoreboard-{g.n}{g.b}{g.s}{g.t}.txt', 'w')
         sys.stdout = score_board_file
 
