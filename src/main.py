@@ -334,12 +334,15 @@ class Game:
             px = self.get_index(input(F'Enter the x coordinate (A-{self.get_letter(self.n - 1)}): '))
             py = int(input(F'Enter the y coordinate (0-{self.n - 1}): '))
             if self.is_valid(px, py):
-                self.current_state[px][py] = '*'
                 self.block_coords.append((px, py))
                 block_count += 1
                 self.draw_board()
             else:
                 print('This is not a valid location for a block, please try again')
+
+        # Set blocks in state
+        for block in self.block_coords:
+            self.current_state[block[0]][block[1]] = '*'
 
     def switch_player(self):
         if self.player_turn == 'X':
