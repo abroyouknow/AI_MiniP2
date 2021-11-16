@@ -722,7 +722,7 @@ def main():
         # Switch to file for game trace
         if g.game_mode == Game.AI_VS_AI:
             # Open output file and redirect stdout to it
-            game_file = open(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}-{i}.txt', 'w')
+            game_file = open(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}/gameTrace-{g.n}{g.b}{g.s}{g.t}-{i}.txt', 'w')
             sys.stdout = game_file
 
         # Draw initial board
@@ -743,7 +743,7 @@ def main():
 
     if g.game_mode == Game.AI_VS_AI:
         # Open output file and redirect stdout to it
-        score_board_file = open(F'../results/scoreboard-{g.n}{g.b}{g.s}{g.t}.txt', 'w')
+        score_board_file = open(F'../results/gameTrace-{g.n}{g.b}{g.s}{g.t}/scoreboard-{g.n}{g.b}{g.s}{g.t}.txt', 'w')
         sys.stdout = score_board_file
 
     g.print_scoreboard(r)
